@@ -30,6 +30,11 @@ namespace Test.WinForms
     /// </summary>
     public interface ITerminalPresenter
     {
+        String Title
+        {
+            get;
+        }
+
         void UpdateUI();
 
         ITerminalPresenter this[Int32 index]

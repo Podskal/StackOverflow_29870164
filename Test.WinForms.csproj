@@ -53,6 +53,12 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="APlusBPresenter.cs" />
+    <Compile Include="ChainLinkStringReturnPrevious.cs" />
+    <Compile Include="ChainLinkHeadPresenterBase.cs" />
+    <Compile Include="ChainLinkMiddlePresenterBase.cs" />
+    <Compile Include="ChainLinkSelectHead.cs" />
+    <Compile Include="ChainLinkSelectMiddle.cs" />
+    <Compile Include="IChainLinkPresenter.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,7 +71,7 @@
     <Compile Include="SelectOptionPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpecificTerminalPresenterBase.cs" />
+    <Compile Include="TerminalPresenterBase.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>

@@ -18,6 +18,8 @@ using System.Windows.Forms;
 
 namespace Test.WinForms
 {
+#warning This project is just a proof of concept, so be aware that it lucks both good design and normal error handling
+
     public partial class MainForm : Form,
         ITerminalView
     {
@@ -27,21 +29,57 @@ namespace Test.WinForms
         {
             InitializeComponent();
 
-            var nextLevelPresenters = new KeyValuePair<String, ITerminalPresenter>[]
+
+            var topPresenter = new SelectOptionPresenter(this, "Select the option and press the confirm button");
+
+            var selectionChainStart = 
+                new ChainLinkSelectHead<String>(this,
+                    "Select A",
+                    new KeyValuePair<String, String>[]
+                    {
+                        new KeyValuePair<String, String>("A - 1", "Select A = A - 1"),
+                        new KeyValuePair<String, String>("A - 2", "Select A = A - 2")
+                    });
+
+
+            selectionChainStart.ContinueWith(new ChainLinkSelectMiddle<String, String>(this,
+                        "Select B",
+                        new KeyValuePair<String, Func<IChainLinkPresenter<String>, String>>[]
+                        {
+                            new KeyValuePair<String, Func<IChainLinkPresenter<String>, String>>(
+                                "B - 1", 
+                                (prev) => 
+                                    String.Format("{0}; Select B = B - 1", prev.Result)),
+                            new KeyValuePair<String, Func<IChainLinkPresenter<String>, String>>(
+                                "B - 2", 
+                                (prev) => 
+                                    String.Format("{0}; Select B = B - 2", prev.Result))
+                        }))
+                    .ContinueWith(new ChainLinkSelectMiddle<String, String>(this,
+                        "Select B",
+                        new KeyValuePair<String, Func<IChainLinkPresenter<String>, String>>[]
+                        {
+                            new KeyValuePair<String, Func<IChainLinkPresenter<String>, String>>(
+                                "C - 1", 
+                                (prev) => 
+                                    String.Format("{0}; Select C = C - 1", prev.Result)),
+                            new KeyValuePair<String, Func<IChainLinkPresenter<String>, String>>(
+                                "C - 2", 
+                                (prev) => 
+                                    String.Format("{0}; Select C = C - 2", prev.Result))
+                        }))
+                    .ContinueWith(new ChainLinkStringReturnPrevious<String>(this,
+                        "The result is"))
+                    .EndWith(topPresenter);
+
+            topPresenter.Options = new KeyValuePair<String, ITerminalPresenter>[]
             {
                 new KeyValuePair<String, ITerminalPresenter>(
                     "A plus B", 
                     new APlusBPresenter(this)),
-                new KeyValuePair<String, ITerminalPresenter>(
-                    "Just empty selector", 
-                    new SelectOptionPresenter(this, 
-                        "Selector with no selection choices", 
-                        Enumerable
-                            .Empty<KeyValuePair<String, ITerminalPresenter>>()
-                            .ToArray()))
+                new KeyValuePair<String, ITerminalPresenter>("Chain", selectionChainStart)                
             };
 
-            var topPresenter = new SelectOptionPresenter(this, "Select the option and press the confirm button",  nextLevelPresenters);
 
             this.globalTerminalPresenter = new GlobalTerminalPresenter(topPresenter);
         }

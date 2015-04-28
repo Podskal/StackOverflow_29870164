@@ -11,14 +11,22 @@ namespace Test.WinForms
     public abstract class TerminalPresenterBase : ITerminalPresenter
     {
         protected ITerminalView view;
+        private String title;
 
-        public TerminalPresenterBase(ITerminalView view)
+        public TerminalPresenterBase(ITerminalView view, String title)
         {
             if (view == null) 
                 throw new ArgumentNullException("view");
 
             this.view = view;
+            this.title = title;
             this.Parent = this;
+        }
+
+        public String Title
+        {
+            get;
+            protected set;
         }
 
         public abstract void UpdateUI();

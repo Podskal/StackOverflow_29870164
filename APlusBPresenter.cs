@@ -120,7 +120,7 @@ namespace Test.WinForms
                 });
         }
 
-        public APlusBPresenter(ITerminalView view) : base(view)
+        public APlusBPresenter(ITerminalView view) : base(view, "A + B")
         {
             this.InitializeStateActions();
             this.Reset();

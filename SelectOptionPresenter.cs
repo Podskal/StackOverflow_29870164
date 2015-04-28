@@ -6,39 +6,65 @@ using System.Text;
 namespace Test.WinForms
 {
     /// <summary>
-    /// Presenter whose sole goal is to allow user to select some other option and press next
+    /// Presenter whose sole goal is to allow user to select some other option with single button click
     /// </summary>
     public class SelectOptionPresenter : TerminalPresenterBase
     {
+#warning Options can be set or can be not set resulting in inconsistent state - consider some workaround for real app.
+
         private IList<KeyValuePair<String, ITerminalPresenter>> options;
         private ITerminalPresenter selected;
-        private String title;
+
+        /// <summary>
+        /// Bad constructor - uses null options.
+        /// </summary>
+        /// <param name="view"></param>
+        /// <param name="title"></param>
+        public SelectOptionPresenter(ITerminalView view,
+            String title)
+            : this(view, title, null)
+        {
+        }
 
         public SelectOptionPresenter(ITerminalView view,
-            String title, 
+            String title,
             IList<KeyValuePair<String, ITerminalPresenter>> options)
-            : base(view)
+            : base(view, title)
         {
-            if (options == null)
-                throw new ArgumentNullException("options");
+            this.Options = options;
+        }
 
-            this.title = title;
-
-            this.options = options;
-
-            foreach (var item in options)
+        /// <summary>
+        /// Bad setter - allows bad values.
+        /// </summary>
+        public IList<KeyValuePair<String, ITerminalPresenter>> Options
+        {
+            get
             {
-                item.Value.Parent = this;
+                return this.options;
             }
+            set
+            {
+                this.options = value;
+
+                if (value == null)
+                    return;
+
+                foreach (var item in value)
+                {
+                    item.Value.Parent = this;
+                }
+            }  
+            
         }
 
         public override void UpdateUI()
         {
             this.view.Clear();
 
-            this.view.Button1_Text = "Confirm selection";
-            this.view.Button2_Text = "Go back";
-            this.view.Title = title;
+            this.view.Button1_Text = this.options[0].Key;
+            this.view.Button2_Text = this.options[1].Key;
+            this.view.Title = this.Title;
             this.view.SelectionItems = options
                 .Select(opt => opt.Key);
         }
@@ -55,29 +81,12 @@ namespace Test.WinForms
 
         public override ITerminalPresenter Do1()
         {
-            return this.ConfirmSelection();
+            return this.options[0].Value;
         }
 
         public override ITerminalPresenter Do2()
         {
-            return this.GoBack();
-        }
-
-        public ITerminalPresenter ConfirmSelection()
-        {
-            if (selected == null)
-            {
-                return this;
-            }
-
-            this.selected.UpdateUI();
-            return this.selected;
-        }
-        
-        public ITerminalPresenter GoBack()
-        {
-            this.Parent.UpdateUI();
-            return this.Parent;
+            return this.options[1].Value;
         }
     }
 }

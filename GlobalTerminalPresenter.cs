@@ -15,7 +15,7 @@ namespace Test.WinForms
         private ITerminalPresenter current;
         private Int32 selectedIndex;
 
-        #endregion
+        #endregion 
         
 
         #region Constructors
@@ -40,11 +40,13 @@ namespace Test.WinForms
         public void Do1()
         {
             this.current = this.current.Do1();
+            this.UpdateUI();
         }
 
         public void Do2()
         {
             this.current = this.current.Do2();
+            this.UpdateUI();
         }
 
         public Int32 SelectedIndex
